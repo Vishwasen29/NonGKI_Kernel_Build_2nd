@@ -150,9 +150,12 @@ jobs:
           # Add bbg to CONFIG_LSM in defconfig
           DEFCONFIG=$(find . -name "kona-perf_defconfig" | head -1)
           echo "Found defconfig at: $DEFCONFIG"
-          sed -i '/CONFIG_LSM=/ s/"$/,bbg"/' $DEFCONFIG
+          CURRENT_LSM=$(grep 'CONFIG_LSM=' $DEFCONFIG | sed 's/CONFIG_LSM="\(.*\)"/\1/')
+          echo "Current LSM: $CURRENT_LSM"
+          sed -i '/^CONFIG_LSM=/d' $DEFCONFIG
+          echo "CONFIG_LSM=\"${CURRENT_LSM},bbg\"" >> $DEFCONFIG
+          echo "Updated LSM:"
           grep "CONFIG_LSM" $DEFCONFIG
-
       - name: 🔒 Patch Kernel of Baseband Guard
         uses: ./.github/workflows/patch-baseband-guard
 
