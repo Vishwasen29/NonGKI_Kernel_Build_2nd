@@ -107,8 +107,17 @@ jobs:
       - name: ⌛️ Compilation environment preparation
         uses: ./.github/workflows/build-env
 
+      - name: 📦 Cache Clang Toolchain
+        id: cache-clang
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/clang
+          key: clang-${{ env.CLANG_SOURCE }}
+
       - name: ⚙️ Get neccssary tools
         uses: ./.github/workflows/build-ready
+        with:
+          clang-cache-hit: ${{ steps.cache-clang.outputs.cache-hit }}   
 
       - name: 🪝 Patch Kernel of SUSFS
         uses: ./.github/workflows/patch-susfs
