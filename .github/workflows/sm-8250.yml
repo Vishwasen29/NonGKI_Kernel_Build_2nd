@@ -34,6 +34,7 @@ env:
 
   KERNELSU_AUTO_GET : "true" # if u want easy setting kernelsu, u can true.
   KERNELSU_AUTO_FORK : "sukisu" # magic, rsuntk, next, resukisu and sukisu
+  
 
   SUSFS_ENABLE : true
   SUSFS_FIXED : true
@@ -120,7 +121,11 @@ jobs:
           # Only ${{ env.DEVICE_NAME }} use it.
           cd $GITHUB_WORKSPACE/device_kernel
           # Nothing
-
+      - name: 🪛 Extra Kernel Options
+        run: |
+          # Only ${{ env.DEVICE_NAME }} use it.
+          cd $GITHUB_WORKSPACE/device_kernel
+          sed -i 's/CONFIG_LSM="\(.*\)"/CONFIG_LSM="\1,bbg"/' arch/arm64/configs/vendor/kona-perf_defconfig
       - name: 🧰 Patch Kernel of Re:Kernel
         uses: ./.github/workflows/patch-rekernel
 
