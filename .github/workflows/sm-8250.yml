@@ -1,4 +1,4 @@
-name: Build Sample YAML
+name: A OP9R build
 
 on:
   workflow_call:
