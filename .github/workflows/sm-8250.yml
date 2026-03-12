@@ -137,14 +137,26 @@ jobs:
       - name: 🔒 Fix Baseband Guard LSM Config
         run: |
           cd $GITHUB_WORKSPACE/device_kernel
+
+          # Fix defconfig
           DEFCONFIG=$(find . -name "kona-perf_defconfig" | head -1)
-          echo "Found defconfig at: $DEFCONFIG"
+          echo "Defconfig: $DEFCONFIG"
           CURRENT_LSM=$(grep 'CONFIG_LSM=' $DEFCONFIG | sed 's/CONFIG_LSM="\(.*\)"/\1/')
-          echo "Current LSM: $CURRENT_LSM"
+          echo "Current LSM in defconfig: $CURRENT_LSM"
           sed -i '/^CONFIG_LSM=/d' $DEFCONFIG
           echo "CONFIG_LSM=\"${CURRENT_LSM},bbg\"" >> $DEFCONFIG
-          echo "Updated LSM:"
-          grep "CONFIG_LSM" $DEFCONFIG  
+          echo "Updated defconfig LSM:"
+          grep "CONFIG_LSM" $DEFCONFIG
+
+          # Also fix out/.config if it already exists
+          if [ -f "out/.config" ]; then
+            echo "Found out/.config, patching it too..."
+            CURRENT_LSM2=$(grep 'CONFIG_LSM=' out/.config | sed 's/CONFIG_LSM="\(.*\)"/\1/')
+            sed -i '/^CONFIG_LSM=/d' out/.config
+            echo "CONFIG_LSM=\"${CURRENT_LSM2},bbg\"" >> out/.config
+            echo "Updated out/.config LSM:"
+            grep "CONFIG_LSM" out/.config
+          fi
 
       - name: 🔧 Patch Hide Stuff
         uses: ./.github/workflows/patch-hide-stuff
