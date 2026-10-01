@@ -35,8 +35,8 @@ env:
   KERNELSU_AUTO_GET : "true" # if u want easy setting kernelsu, u can true.
   KERNELSU_AUTO_FORK : "next" # xxksu, rsuntk, next, resukisu and sukisu. KernelSU-Next (legacy branch).
 
-  SUSFS_ENABLE : false # KernelSU-Next legacy has no SUSFS support (build-ready aborts if it is on).
-  SUSFS_FIXED : false
+  SUSFS_ENABLE : true # KernelSU-Next legacy has no SUSFS support (build-ready aborts if it is on).
+  SUSFS_FIXED : true
 
   AK3_SOURCE : "https://github.com/osm0sis/AnyKernel3.git"
   AK3_BRANCH : "master"
@@ -59,12 +59,12 @@ env:
   PATCHES_SOURCE: "JackA1ltman/NonGKI_Kernel_Patches" # [your_name]/[your_patch] -> gooder123/NonGKI_Patcher
   PATCHES_BRANCH: "op_kernel" # [your_branch] -> main
 
-  SUSFS_FOLDER_FIXED: "" # Fill in your patch prefix directory here. Leave it blank if there isn't one. -> your_folder
-  SUSFS_PATCH_FIXED: "" # Fill in your patches here. If there are multiple patches, please separate them with a comma. Leave it blank if there isn't one. -> patch1,patch2
+  SUSFS_FOLDER_FIXED: "kona_cos15_a15" # Fill in your patch prefix directory here. Leave it blank if there isn't one. -> your_folder
+  SUSFS_PATCH_FIXED: "susfs_fixed" # Fill in your patches here. If there are multiple patches, please separate them with a comma. Leave it blank if there isn't one. -> patch1,patch2
 
   REKERNEL_ENABLE: "false" # if u need Re:Kernel.
   DROIDSPACES_ENABLE: "false" # if u need Droidspaces or LXC/Docker.
-  NOMOUNT_ENABLE: "false" # if u need NoMount.
+  NOMOUNT_ENABLE: "true" # if u need NoMount.
 
   HOOK_METHOD: "syscall" # Manual hook method ->  syscall. (SUSFS is off, so patch-no-kprobe runs syscall_hook_patches.sh)
 
@@ -123,6 +123,9 @@ jobs:
           chmod +x "$GITHUB_WORKSPACE/port_kernelsu_next_legacy.sh"
           cd "$GITHUB_WORKSPACE/device_kernel"
           bash "$GITHUB_WORKSPACE/port_kernelsu_next_legacy.sh" "$PWD" "arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEFCONFIG_NAME }}"
+          chmod +x "$GITHUB_WORKSPACE/fix_lineage_sm8250.sh"
+          cd "$GITHUB_WORKSPACE/device_kernel"
+          bash "$GITHUB_WORKSPACE/fix_lineage_sm8250.sh" "$PWD"
 
       - name: 🪛 Extra Kernel Options
         run: |
