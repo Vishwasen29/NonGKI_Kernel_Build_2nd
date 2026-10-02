@@ -109,6 +109,13 @@ jobs:
 
       - name: 🪝 Patch Kernel of SUSFS
         uses: ./.github/workflows/patch-susfs
+     
+      - name: 🛠️ Fix LineageOS SM8250 SUSFS
+        run: |
+          set -e
+          chmod +x "$GITHUB_WORKSPACE/fix_lineage_sm8250.sh"
+          cd "$GITHUB_WORKSPACE/device_kernel"
+          bash "$GITHUB_WORKSPACE/fix_lineage_sm8250.sh" "$PWD"
 
       - name: 🔗 Patch for no-kprobe
         uses: ./.github/workflows/patch-no-kprobe
