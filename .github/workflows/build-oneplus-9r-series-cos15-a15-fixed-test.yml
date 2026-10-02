@@ -1,4 +1,4 @@
-name: Build OnePlus 9r Series KSUN
+name: Build OnePlus 9r Series sukiksu
 
 on:
   workflow_call:
