@@ -1,0 +1,58 @@
+name: Sync Upstream Mainline
+
+on:
+  schedule:
+    # Every day at 00:00 UTC / 05:30 IST
+    - cron: "0 0 * * *"
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout mainline
+        uses: actions/checkout@v4
+        with:
+          ref: mainline
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Add upstream repository
+        run: |
+          git remote add upstream https://github.com/JackA1ltman/NonGKI_Kernel_Build_2nd.git
+          git remote -v
+
+      - name: Fetch upstream
+        run: |
+          git fetch upstream mainline
+
+      - name: Check upstream changes
+        id: check
+        run: |
+          if git diff --quiet HEAD upstream/mainline; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No upstream changes."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Upstream changes detected."
+          fi
+
+      - name: Merge upstream
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git merge --no-edit upstream/mainline
+
+      - name: Push updated mainline
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git push origin mainline
